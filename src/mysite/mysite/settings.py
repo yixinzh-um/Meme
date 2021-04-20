@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,18 +22,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-y0pfa!%d%@=#6(6j2o7y0h5&&rpzh@ct2rc01porv6zii2()+h'
+SECRET_KEY = config("SECRET_KEY") # this is to replace the secret key you cut away before
+FLICKR_API_KEY=config("FLICKR_API_KEY") 
+FLICKR_API_SECRET=config("FLICKR_API_SECRET") 
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
 
-FLICKR_API_KEY='336e6f4d1ff271b7b053517fefb5d746'
-FLICKR_API_SECRET='bbc57228c99c80c6'
+
 # Application definition
-api_key='336e6f4d1ff271b7b053517fefb5d746'
-api_secret='bbc57228c99c80c6'
 
 
 INSTALLED_APPS = [

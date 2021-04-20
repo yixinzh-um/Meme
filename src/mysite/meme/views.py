@@ -1,24 +1,26 @@
 from mysite.settings import FLICKR_API_KEY, FLICKR_API_SECRET
 from django.shortcuts import render, redirect
-from django.template import RequestContext
 import flickrapi
 
+import logging
+logging.basicConfig()
+
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
+
+
 def require_flickr_auth(view):
+#View decorator, redirects users to Flickr when no valid
+#authentication token is available.
+
 	def protected_view(request, *args, **kwargs):
 
-		if 'token' in request.session:
-			token = request.session['token']			
-		else:
-			flickr = flickrapi.FlickrAPI(
-				FLICKR_API_KEY, 
-				FLICKR_API_SECRET)
-			# flickr.get_token_part_one(
-			# 	perms='write')	
-			token = False
+		f=flickr(request)
 
-		f = flickrapi.FlickrAPI(FLICKR_API_KEY,
-			FLICKR_API_SECRET, token=token,
-			store_token=False)
+		try:
+			token = request.session['token']	
+		except:
+			token = None	
 
 		if token:
 			#check validity of the token
@@ -44,7 +46,7 @@ def flickr_callback(request):
 	if not 'flickr_token' in request.session:
 		f = flickrapi.FlickrAPI(FLICKR_API_KEY,
 			FLICKR_API_SECRET, store_token=False)
-		frob = '72157718994466752-1a44a08330348578-188796171'
+		frob=None
 		token=None
 		try:
 			frob = request.GET['frob']
@@ -56,9 +58,11 @@ def flickr_callback(request):
 
 def flickr(request):
 	try:
-		token = request.session['token']	
+		token = request.session['token']
+		log.info('Getting token from session: %s' % token)	
 	except:
 		token = None		
+		log.info('No token in session')
 
 	f = flickrapi.FlickrAPI(FLICKR_API_KEY,
 		FLICKR_API_SECRET, token=token,
@@ -68,7 +72,7 @@ def flickr(request):
 
 def getPhotosets(flickr):
 	
-	photoset_list = flickr.photosets_getList(user_id='73509078@N00') \
+	photoset_list = flickr.photosets.getList(user_id='73509078@N00',per_page='5') \
 		.find('photosets') \
 		.findall('photoset')
 	photoset_list_array = []
@@ -81,7 +85,7 @@ def getPhotosets(flickr):
 	return photoset_list_array
 
 def getPhotos(flickr,id):
-	photoset_photos = flickr.photosets_getPhotos(photoset_id=id) \
+	photoset_photos = flickr.photosets.getPhotos(photoset_id=id,per_page='5') \
 		.find('photoset').findall('photo')
 	photoset_photos_list = []
 	for photo in photoset_photos:
