@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Meme</title>
+    <!-- <link crossorigin="anonymous"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css"
+          integrity="sha256-8B1OaG0zT7uYA572S2xOxWACq9NXYPQ+U5kHPV1bJN4="
+          rel="stylesheet"/>
+    <link rel="shortcut icon" type="image/png" href="https://assets.digitalocean.com/logos/favicon.png"/> -->
+</head>
+{% for photoset in output %}
+	<h1>{{ photoset.album_name }}</h1><br />
+	{% for photo in photoset.photo_list %}
+		<img 
+			src="{{photo}}" 
+			width="100px" 
+			height="100px"/>
+	{% endfor %}
+{% endfor %}
+</body>
+</html>
