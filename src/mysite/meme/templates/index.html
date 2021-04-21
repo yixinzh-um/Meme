@@ -1,22 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Meme</title>
-    <!-- <link crossorigin="anonymous"
-          href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css"
-          integrity="sha256-8B1OaG0zT7uYA572S2xOxWACq9NXYPQ+U5kHPV1bJN4="
-          rel="stylesheet"/>
-    <link rel="shortcut icon" type="image/png" href="https://assets.digitalocean.com/logos/favicon.png"/> -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+        integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
+        crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.js"
+        integrity="sha512-wUa0ktp10dgVVhWdRVfcUO4vHS0ryT42WOEcXjVVF2+2rcYBKTY7Yx7JCEzjWgPV+rj2EDUr8TwsoWF6IoIOPg=="
+        crossorigin="anonymous"></script>
 </head>
-{% for photoset in output %}
-	<h1>{{ photoset.album_name }}</h1><br />
-	{% for photo in photoset.photo_list %}
-		<img 
-			src="{{photo}}" 
-			width="100px" 
-			height="100px"/>
-	{% endfor %}
-{% endfor %}
+
+<body>
+
+    <div class="px-4 py-5 my-5 text-center">
+        <img class="d-block mx-auto mb-4" src="https://cdn3.iconfinder.com/data/icons/flat-icons-web/40/Flickr-512.png"
+            alt="" width="72" height="57">
+        <h1 class="display-5 fw-bold">Create Your Own Meme</h1>
+        <br>
+        <h1>Search</h1>
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+
+            <form class="needs-validation  gap-2 d-sm-flex justify-content-sm-center position-relative" novalidate="">
+                <div class="form-group">
+                    <label for="tag" class="form-label clearfix"> what photo are you looking for? <span
+                            class="text-muted"></span></label>
+                    <input type="text" class="form-control position-relative flex-sm-column" id="tag"
+                        placeholder="Search.." name="search" {% if search %} value="{{ search }}" {% endif %}>
+
+                    <div class="invalid-feedback">
+                        Please enter a valid tag for your photo search.
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+    <div classs="album py-5 bg-light">
+        <h1 class='text-center'>Select</h1>
+        <div class="container">
+            <div class="row">
+                {% for photo in output %}
+                <div class="col-md-4 col-lg-3 ">
+
+                    <div class="card mb-4 box-shadow photo " id={{photo.id}}>
+                        <img class="card-img-top" alt="Thumbnail [100%x225]"
+                            style="height: 100%; width: 100%; position: relative; display: block;" src={{photo.url}}
+                            data-holder-rendered="true">
+                        <div class="card-body">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-sm btn-outline-secondary">Select</button>
+                            </div>
+                            <small class="text-muted"></small>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <h1 class='text-center'>Text</h1>
+    <p for="tag" class="form-label text-center"> What text do you want to add? </p>
+    <div class='' id='textInputDiv'>
+        <input type="text" class="form-control position-relative flex-sm-column " placeholder="Text..">
+        <button type="button" class="btn btn-outline-secondary btn-md px-4 me-sm-3 ">Add</button>
+    </div>
+    
+    <div id='outfit'>
+        <div class=" d-grid gap-2 d-sm-flex justify-content-sm-center p-2" id='photo-text'>
+            <div class='position-relative d-sm-flex' id='append'>
+                <img id='photo-editted' src={{updateUrl}}>
+                <h1 class=" carousel-caption display-4 fst-italic fw-bold" id='text-over-photo'></h1>
+                </img>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="d-sm-flex justify-content-sm-center">
+        <button class="btn btn-primary btn-lg px-4 m-sm-auto " id="btn-download">
+            <a href="#" class="text-white text-decoration-none" download="meme.png">Download</a>
+        </button>
+    </div>
+
 </body>
+
+<script>
+    const photosELem = document.querySelectorAll('.photo');
+    const photoEditElem = document.querySelector('#photo-edit');
+    const photoEdittedElem = document.querySelector('#photo-editted');
+    const textInputDiv = document.querySelector('#textInputDiv');
+    const textInputElem = textInputDiv.children[0];
+    const textInputButton = textInputDiv.children[1];
+    const textOverPhotoElem = document.querySelector("#text-over-photo");
+    const downloadButton = document.getElementById('btn-download');
+    const downloadLink = downloadButton.children[0]
+
+    //add photo to selection
+    let updateUrl;
+    photosELem.forEach(element => {
+        const button = element.querySelector('button');
+        const image = element.querySelector('img');
+        const url = image.src
+
+        button.addEventListener('click', () => {
+            photoEdittedElem.src = url
+        })
+    })
+
+    textInputButton.addEventListener('click', () => {
+        // add text over photo
+        textOverPhotoElem.textContent = textInputElem.value
+        textInputElem.value = ""
+        // elements to image
+        domtoimage.toPng(node).then(function (dataUrl) {
+            const img = new Image();
+            img.src = dataUrl;
+            document.body.appendChild(img);
+            downloadLink.href = img.src
+            img.style = 'display:none'
+        }).catch(function (error) {
+            console.error('oops, something went wrong!', error);
+        });
+
+    })
+    const node = document.getElementById('outfit');
+</script>
 </html>
