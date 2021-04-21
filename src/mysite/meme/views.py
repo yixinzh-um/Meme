@@ -2,6 +2,7 @@ from mysite.settings import FLICKR_API_KEY, FLICKR_API_SECRET
 from django.shortcuts import render, redirect
 import flickrapi
 
+# log infomation to see the status
 import logging
 logging.basicConfig()
 
@@ -71,8 +72,9 @@ def flickr(request):
 	return f
 
 def getPhotoSearch(request,flickr):
+	# get the search tag
 	strval = request.GET.get("search",None)
-	# if strval:
+	# get the photo's atribute by given tag
 	photo_list = flickr.photos.search(tags=[{strval}],per_page='8') \
 		.find('photos') \
 		.findall('photo')
@@ -90,75 +92,11 @@ def getPhotoSearch(request,flickr):
 
 
 
-# def getPhotosets(flickr):
-	
-# 	photoset_list = flickr.photosets.getList(user_id='73509078@N00',per_page='5') \
-# 		.find('photosets') \
-# 		.findall('photoset')
-
-# 	photo_url_list=[]
-# 	for photo in photos:
-# 		photo_id=photo.attrib['id']
-# 		owner = photo.attrib['owner']
-# 		secret = photo.attrib['secret']
-# 		server = photo.attrib['server']
-# 		title = photo.attrib['title']
-# 		photo_url = \
-# 			f'https://live.staticflickr.com/{server}/{photo_id}_{secret}.jpg'
-# 		photo_url_list.append(photo_url)
-# 	return photo_url_list
-
-
-# def getPhotos(flickr,id):
-# 	photoset_photos = flickr.photosets.getPhotos(photoset_id=id,per_page='5') \
-# 		.find('photoset').findall('photo')
-# 	photoset_photos_list = []
-# 	for photo in photoset_photos:
-# 		photo_id = photo.attrib['id']
-# 		secret = photo.attrib['secret']
-# 		farm = photo.attrib['farm']
-# 		server = photo.attrib['server']
-# 		title = photo.attrib['title']
-# 		photo_url = \
-# 		'http://farm%s.static.flickr.com/%s/%s_%s.jpg'  \
-# 			% (farm,server,photo_id,secret)
-# 		photoset_photos_list.append(photo_url)
-# 	return photoset_photos_list
-
-
-# def getPhotoUrls(photos):
-# 	photo_url_list=[]
-# 	for photo in photos:
-# 		photo_id=photo.attrib['id']
-# 		owner = photo.attrib['owner']
-# 		secret = photo.attrib['secret']
-# 		server = photo.attrib['server']
-# 		title = photo.attrib['title']
-# 		photo_url = \
-# 			f'https://live.staticflickr.com/{server}/{photo_id}_{secret}.jpg'
-# 		photo_url_list.append(photo_url)
-# 	return photo_url_list
-
-
 @require_flickr_auth
 def index(request):
 	f = flickr(request)
-	# photosets = getPhotosets(f)
 	photos = getPhotoSearch(request,f)
-	
 	output = photos
-	# output = [{'photo_url':p} for p in photo_list]
-
-	# for url in photo_url_list:
-	# 	output.append({'url':url})
-
-
-	# for photo in photos:
-	# 	photo = getPhotos(f,photo['id'])
-	# 	output.append({
-	# 		'album_name':photo['name'],
-	# 		'photo_list': photo})
-
 	context = {'output':output}
 	return render(request,
 			'index.html',
